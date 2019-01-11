@@ -1,5 +1,5 @@
 # vue-eventapp
-
+An event calendar tracking app using Vue and Pusher
 ## Project setup
 ```
 yarn install
