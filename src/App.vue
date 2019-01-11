@@ -1,28 +1,83 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
-</template>
+      <div id="app">
+        <div class="main">
+          <div class="calendar-holder">
+            <calendar :events="events" />
+          </div>
+          <div class="form-holder">
+            <h3>Schedule an event</h3>
+            <event-form />
+          </div>
+        </div>
+      </div>
+    </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
-</script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+ <script>
+    import Calendar from './components/Calendar.vue'
+    import EventForm from './components/EventForm.vue'
+    import Pusher from 'pusher-js';
+    export default {
+      name: 'app',
+      components: {
+        Calendar,
+        EventForm
+      },
+      data(){
+        return {
+          events: [{
+            title     :  'event1',
+            start     : '2018-07-09',
+            cssClass  : 'blue',
+            YOUR_DATA : {}
+          },
+          {
+            title     : 'event2',
+            start     : '2018-07-10',
+            end       : '2018-07-13',
+            cssClass  : ['orange']
+          }] 
+        }
+      },
+      created(){
+        const pusher = new Pusher('80493e20ea0f59dafb82', {
+          cluster: 'mt1',
+          encrypted: true,
+        });
+        const channel = pusher.subscribe('schedule');
+        channel.bind('new-event', (data) => {
+          this.events = [
+            ...this.events,
+            data
+          ];
+        })
+      }
+    }
+    </script>
+    <style>
+    #app {
+      font-family: 'Avenir', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 60px;
+    }
+    .main {
+      display: flex;
+      align-items: center;
+    }
+    .calendar-holder {
+      width: 65%;
+    }
+    .form-holder {
+      width: 35%;
+    }
+    .form-holder > h3 {
+      color: orangered;
+      text-transform: uppercase;
+      font-size: 16px;
+      text-align: left;
+      margin-left: 30px;
+      margin-bottom: 10px;
+    }
+    </style>
